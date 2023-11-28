@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
@@ -30,16 +30,17 @@ async function run() {
     const medicalCampCollection = client.db("mediCampDB").collection("medicalCamps");
     // const userCollection = client.db("bistroDb").collection("users");
 
+    //medical camps related api
     app.get('/medicalCamps', async(req, res)=>{
         const result = await medicalCampCollection.find().toArray();
         res.send(result);
     })
-    // app.get('/menu/:id', async(req, res)=>{
-    //   const id= req.params.id;
-    //   const query = {_id: new ObjectId(id)};
-    //   const result = await menuCollection.findOne(query);
-    //   res.send(result);
-    // })
+    app.get('/medicalCamps/:id', async(req, res)=>{
+      const id= req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await medicalCampCollection.findOne(query);
+      res.send(result);
+    })
 
     // app.post('/menu',verifyToken, verifyAdmin, async(req, res)=>{
     //   const item = req.body;
