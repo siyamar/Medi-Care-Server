@@ -28,6 +28,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const medicalCampCollection = client.db("mediCampDB").collection("medicalCamps");
+    const registeredCollection = client.db("mediCampDB").collection("registered");
     // const userCollection = client.db("bistroDb").collection("users");
 
     //medical camps related api
@@ -72,6 +73,17 @@ async function run() {
     //   const result = await menuCollection.deleteOne(query);
     //   res.send(result);
     // })
+
+    //Registered related api
+    app.get('/registered', async(req, res)=>{
+      const result = await medicalCampCollection.find().toArray();
+      res.send(result);
+  })
+    app.post('/registered', async(req, res)=>{
+      const client = req.body;
+      const result = await registeredCollection.insertOne(client);
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
