@@ -25,12 +25,9 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-    const medicalCampCollection = client
-      .db("mediCampDB")
-      .collection("medicalCamps");
-    const registeredCollection = client
-      .db("mediCampDB")
-      .collection("registered");
+    const medicalCampCollection = client.db("mediCampDB").collection("medicalCamps");
+    const registeredCollection = client.db("mediCampDB").collection("registered");
+    const reviewsCollection = client.db("mediCampDB").collection("reviews");
     // const userCollection = client.db("bistroDb").collection("users");
 
     //medical camps related api
@@ -97,6 +94,12 @@ async function run() {
       const result = await registeredCollection.insertOne(client);
       res.send(result);
     });
+
+    //reviews related api
+    app.get('/reviews', async(req, res)=>{
+      const result = await reviewsCollection.find().toArray();
+      res.send(result);
+  })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
