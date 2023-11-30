@@ -28,7 +28,7 @@ async function run() {
     const medicalCampCollection = client.db("mediCampDB").collection("medicalCamps");
     const registeredCollection = client.db("mediCampDB").collection("registered");
     const reviewsCollection = client.db("mediCampDB").collection("reviews");
-    // const userCollection = client.db("bistroDb").collection("users");
+    const userCollection = client.db("mediCampDB").collection("users");
 
     //medical camps related api
     app.get("/medicalCamps", async (req, res) => {
@@ -94,6 +94,25 @@ async function run() {
       const result = await registeredCollection.insertOne(client);
       res.send(result);
     });
+
+    //users related api
+    app.get('/users', async(req, res)=>{
+      const result = await userCollection.find().toArray();
+      res.send(result)
+    })
+
+    app.post('/users', async(req, res)=>{
+      const user = req.body;
+      //ensert email if user doesnt exists
+      //you can do this many ways (1. email unique 2. upsert 3. simple checking)
+      const query = {email: user.email}
+      const existingUser = await userCollection.findOne(query);
+      if(existingUser){
+        return res.send({message: 'User already exists', insertedId: null})
+      }
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    })
 
     //reviews related api
     app.get('/reviews', async(req, res)=>{
