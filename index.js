@@ -57,7 +57,7 @@ async function run() {
           healthcareProfessionals: item.healthcareProfessionals,
           targetAudience: item.targetAudience,
           description: item.description,
-          participat: item.participat
+          participat: item.participat,
         },
       };
       const result = await medicalCampCollection.updateOne(filter, updatedDoc);
@@ -96,29 +96,116 @@ async function run() {
     });
 
     //users related api
-    app.get('/users', async(req, res)=>{
+    app.get("/users", async (req, res) => {
       const result = await userCollection.find().toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
 
-    app.post('/users', async(req, res)=>{
+    app.post("/users", async (req, res) => {
       const user = req.body;
       //ensert email if user doesnt exists
       //you can do this many ways (1. email unique 2. upsert 3. simple checking)
-      const query = {email: user.email}
+      const query = { email: user.email };
       const existingUser = await userCollection.findOne(query);
-      if(existingUser){
-        return res.send({message: 'User already exists', insertedId: null})
+      if (existingUser) {
+        return res.send({ message: "User already exists", insertedId: null });
       }
       const result = await userCollection.insertOne(user);
       res.send(result);
+    });
+
+    app.patch("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const item = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          name: item.name,
+          image: item.image,
+          age: item.age,
+          phone: item.phone,
+          address: item.address,
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc, options);
+      res.send(result);
+    });
+
+    app.patch('/users/professional/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter= {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set:{
+          role: 'professional'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result)
+
+    })
+    app.patch('/users/supper/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter= {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set:{
+          role: 'supper'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result)
+
+    })
+
+    //admin check korar jonno
+    app.get('/users/admin/:email', async(req, res)=>{
+      const email = req.params.email;
+      // if(email !== req.decoded.email){
+      //   return res.status(403).send({message: 'forbidden access'})
+      // }
+      const query = {email: email};
+      const user = await userCollection.findOne(query);
+      let admin = false;
+      if(user){
+        admin = user?.role === 'admin';
+      }
+      res.send({admin});
+    })
+    //organizer check 
+    app.get('/users/organizer/:email', async(req, res)=>{
+      const email = req.params.email;
+      // if(email !== req.decoded.email){
+      //   return res.status(403).send({message: 'forbidden access'})
+      // }
+      const query = {email: email};
+      const user = await userCollection.findOne(query);
+      let organizer = false;
+      if(user){
+        organizer = user?.role === 'organizer';
+      }
+      res.send({organizer});
+    })
+
+    //Healthcare Professionals check 
+    app.get('/users/professional/:email', async(req, res)=>{
+      const email = req.params.email;
+      // if(email !== req.decoded.email){
+      //   return res.status(403).send({message: 'forbidden access'})
+      // }
+      const query = {email: email};
+      const user = await userCollection.findOne(query);
+      let organizer = false;
+      if(user){
+        professional = user?.role === 'professional';
+      }
+      res.send({professional});
     })
 
     //reviews related api
-    app.get('/reviews', async(req, res)=>{
+    app.get("/reviews", async (req, res) => {
       const result = await reviewsCollection.find().toArray();
       res.send(result);
-  })
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
