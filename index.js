@@ -42,6 +42,15 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/medicalCamps', async(req, res)=>{
+      const email = req.query.email;
+      const query = {email: email};
+      const result = await medicalCampCollection.find(query).toArray();
+      res.send(result);
+    })
+    
+
+
     app.patch("/medicalCamps/:id", async (req, res) => {
       const id = req.params.id;
       const item = req.body;
@@ -67,6 +76,13 @@ async function run() {
     app.post('/medicalCamps', async(req, res)=>{
       const item = req.body;
       const result = await medicalCampCollection.insertOne(item);
+      res.send(result);
+    })
+
+    app.delete('/medicalCamps/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await medicalCampCollection.deleteOne(query);
       res.send(result);
     })
 
