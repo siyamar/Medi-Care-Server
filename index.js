@@ -63,11 +63,12 @@ async function run() {
       const result = await medicalCampCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
-    // app.post('/menu',verifyToken, verifyAdmin, async(req, res)=>{
-    //   const item = req.body;
-    //   const result = await menuCollection.insertOne(item);
-    //   res.send(result);
-    // })
+
+    app.post('/medicalCamps', async(req, res)=>{
+      const item = req.body;
+      const result = await medicalCampCollection.insertOne(item);
+      res.send(result);
+    })
 
     // app.delete('/menu/:id', verifyToken, verifyAdmin, async(req, res)=>{
     //   const id = req.params.id;
@@ -194,7 +195,7 @@ async function run() {
       // }
       const query = {email: email};
       const user = await userCollection.findOne(query);
-      let organizer = false;
+      let professional = false;
       if(user){
         professional = user?.role === 'professional';
       }
